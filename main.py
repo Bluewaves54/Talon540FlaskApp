@@ -57,7 +57,7 @@ def fetchInformation(deviceID):
     print(account)
     if account is not None:
         print('success')
-        return {account}
+        return account
     else:
         print('fail')
         return {'output': False}
