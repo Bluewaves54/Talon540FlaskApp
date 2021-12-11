@@ -15,11 +15,11 @@ class User(db.Model):
     __tablename__ = 'Accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-    deviceID = db.Column(db.String)
+    deviceid = db.Column(db.String)
     name = db.Column(db.String)
     subgroup = db.Column(db.String)
     status = db.Column(db.String)
-    gradYear = db.Column(db.Integer)
+    gradyear = db.Column(db.Integer)
 
 
 db.init_app(app)
@@ -43,7 +43,7 @@ def addName(name):
 
 @app.route('/deleteAccount/<string:deviceID>')
 def deleteAccount(deviceID):
-    account = User.query.filter_by(deviceID=deviceID).first()
+    account = User.query.filter_by(deviceid=deviceID).first()
     if account is not None:
         db.session.delete(account)
         return {'success': True}
@@ -53,7 +53,7 @@ def deleteAccount(deviceID):
 
 @app.route('/fetchInformation/<string:deviceID>')
 def fetchInformation(deviceID):
-    account = User.query.filter_by(deviceID=deviceID).first()
+    account = User.query.filter_by(deviceid=deviceID).first()
     if account is not None:
         print('success')
         return {account}
@@ -66,11 +66,11 @@ def fetchInformation(deviceID):
 def storeInfo(subgroup, status, gradYear, deviceID):
     print(current_name)
     account = User(
-        deviceID=deviceID,
+        deviceid=deviceID,
         name=current_name,
         subgroup=subgroup,
         status=status,
-        gradYear=gradYear
+        gradyear=gradYear
     )
     db.session.add(account)
     db.session.commit()
