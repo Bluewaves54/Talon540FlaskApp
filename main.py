@@ -75,3 +75,7 @@ def storeInfo(subgroup, status, gradYear, deviceID):
     db.session.add(account)
     db.session.commit()
     return {'value': True}
+
+
+if __name__ == "__main__":
+    app.run()
