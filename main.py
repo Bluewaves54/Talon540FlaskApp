@@ -65,6 +65,7 @@ def fetchInformation(deviceID):
 @app.route('/<string:name>/<string:subgroup>/<string:status>/<string:gradYear>/<string:deviceID>')
 def storeInfo(name, subgroup, status, gradYear, deviceID):
     # print(current_name)
+    print(name, subgroup, status, gradYear, deviceID)
     account = User(
         deviceid=deviceID,
         name=name,
