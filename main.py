@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
-    __tablename__ = 'Accounts'
+    __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key=True)
     deviceid = db.Column(db.String)
