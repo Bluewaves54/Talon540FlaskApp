@@ -54,6 +54,7 @@ def deleteAccount(deviceID):
 @app.route('/fetchInformation/<string:deviceID>')
 def fetchInformation(deviceID):
     account = User.query.filter_by(deviceid=deviceID).first()
+    print(account)
     if account is not None:
         print('success')
         return {account}
