@@ -20,6 +20,8 @@ class User(db.Model):
     subgroup = db.Column(db.String)
     status = db.Column(db.String)
     gradyear = db.Column(db.Integer)
+    pfp = db.Column(db.String),
+    email = db.Column(db.String)
 
 
 db.init_app(app)
@@ -70,8 +72,8 @@ def fetchInformation(deviceID):
         return {'output': False}
 
 
-@app.route('/<string:name>/<string:subgroup>/<string:status>/<string:gradYear>/<string:deviceID>')
-def storeInfo(name, subgroup, status, gradYear, deviceID):
+@app.route('/<string:name>/<string:subgroup>/<string:status>/<string:gradYear>/<string:deviceID>/<string:pfp>/<string:email>')
+def storeInfo(name, subgroup, status, gradYear, deviceID, pfp, email):
     # print(current_name)
     print(name, subgroup, status, gradYear, deviceID)
     account = User(
@@ -79,7 +81,9 @@ def storeInfo(name, subgroup, status, gradYear, deviceID):
         name=name,
         subgroup=subgroup,
         status=status,
-        gradyear=gradYear
+        gradyear=gradYear,
+        pfp=pfp,
+        email=email
     )
     db.session.add(account)
     db.session.commit()
