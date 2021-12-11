@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, url_for
+from flask import Flask
 import pandas
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -22,7 +22,7 @@ class User(db.Model):
     gradYear = db.Column(db.Integer)
 
 
-db.init_app()
+db.init_app(app)
 
 
 @app.route('/')
