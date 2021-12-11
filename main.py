@@ -74,8 +74,4 @@ def storeInfo(subgroup, status, gradYear, deviceID):
     )
     db.session.add(account)
     db.session.commit()
-
-    if deviceID == '' or subgroup == '' or status == '' or gradYear == '':
-        return {'value': False}
-    else:
-        return {'value': True}
+    return {'value': True}
