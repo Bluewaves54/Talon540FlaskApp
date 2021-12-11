@@ -66,6 +66,7 @@ def fetchInformation(deviceID):
 def storeInfo(subgroup, status, gradYear, deviceID):
     print(current_name)
     account = User(
+        id=1,
         deviceid=deviceID,
         name=current_name,
         subgroup=subgroup,
