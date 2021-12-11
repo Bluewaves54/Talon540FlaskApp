@@ -46,6 +46,7 @@ def deleteAccount(deviceID):
     account = User.query.filter_by(deviceid=deviceID).first()
     if account is not None:
         db.session.delete(account)
+        db.session.commit()
         return {'success': True}
     else:
         return {'success': False}
