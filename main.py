@@ -65,7 +65,9 @@ def fetchInformation(deviceID):
             'name': account.name,
             'subgroup': account.subgroup,
             'status': account.status,
-            'gradYear': account.gradyear
+            'gradYear': account.gradyear,
+            'pfp': account.pfp,
+            'email': account.email
         }
     else:
         print('fail')
