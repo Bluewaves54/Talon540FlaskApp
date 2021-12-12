@@ -20,7 +20,7 @@ class User(db.Model):
     subgroup = db.Column(db.String)
     status = db.Column(db.String)
     gradyear = db.Column(db.Integer)
-    pfp = db.Column(db.String),
+    pfp = db.Column(db.String)
     email = db.Column(db.String)
 
 
