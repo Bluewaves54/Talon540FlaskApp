@@ -75,7 +75,7 @@ def fetchInformation(deviceID):
         return {'output': False}
 
 
-@app.route('/createNewAccount')
+@app.route('/createNewAccount', methods=['POST'])
 def storeInfo():
     try:
         name = request.args['name']
