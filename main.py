@@ -75,22 +75,31 @@ def fetchInformation(deviceID):
         return {'output': False}
 
 
-@app.route('/<string:name>/<string:subgroup>/<string:status>/<string:gradYear>/<string:deviceID>/<string:pfp>/<string:email>')
-def storeInfo(name, subgroup, status, gradYear, deviceID, pfp, email):
-    # print(current_name)
-    print(name, subgroup, status, gradYear, deviceID)
-    account = User(
-        deviceid=deviceID,
-        name=name,
-        subgroup=subgroup,
-        status=status,
-        gradyear=gradYear,
-        pfp=pfp,
-        email=email
-    )
-    db.session.add(account)
-    db.session.commit()
-    return {'value': True}
+@app.route('/createNewAccount')
+def storeInfo():
+    try:
+        name = request.args['name']
+        deviceID = request.args['deviceID']
+        subgroup = request.args['subgroup']
+        status = request.args['status']
+        gradYear = request.args['gradYear']
+        pfp = request.args['pfp']
+        email = request.args['email']
+        print(name, subgroup, status, gradYear, deviceID)
+        account = User(
+            deviceid=deviceID,
+            name=name,
+            subgroup=subgroup,
+            status=status,
+            gradyear=gradYear,
+            pfp=pfp,
+            email=email
+        )
+        db.session.add(account)
+        db.session.commit()
+        return {'value': True}
+    except:
+        return {'value': False}
 
 
 if __name__ == "__main__":
