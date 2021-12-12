@@ -60,6 +60,7 @@ def fetchInformation(deviceID):
     print(account)
     if account is not None:
         print('success')
+        print()
         return {
             'deviceID': account.deviceid,
             'name': account.name,
