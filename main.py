@@ -78,14 +78,15 @@ def fetchInformation(deviceID):
 @app.route('/createNewAccount', methods=['POST'])
 def storeInfo():
     try:
+        data = request.get_json()
         print('before setting variables')
-        name = request.args['name']
-        deviceID = request.args['deviceID']
-        subgroup = request.args['subgroup']
-        status = request.args['status']
-        gradYear = request.args['gradYear']
-        pfp = request.args['pfp']
-        email = request.args['email']
+        name = data['name']
+        deviceID = data['deviceID']
+        subgroup = data['subgroup']
+        status = data['status']
+        gradYear = data['gradYear']
+        pfp = data['pfp']
+        email = data['email']
         print("after setting variables")
         print(name, deviceID, email, pfp, subgroup, status, gradYear)
         account = User(
