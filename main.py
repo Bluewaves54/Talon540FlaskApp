@@ -86,6 +86,8 @@ def storeInfo():
         gradYear = request.args['gradYear']
         pfp = request.args['pfp']
         email = request.args['email']
+        print("after setting variables")
+        print(name, deviceID, email, pfp, subgroup, status, gradYear)
         account = User(
             deviceid=deviceID,
             name=name,
