@@ -127,7 +127,7 @@ def viewAccounts():
 
 @app.route('changeNotifMethod/', methods=['POST'])
 def changeNotifMethod():
-    data = request.get_json
+    data = request.get_json()
     account = User.query.filter_by(id=data.deviceid).first()
     account.notifmethod = data.notifMethod
     db.session.add(account)
