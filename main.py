@@ -125,7 +125,7 @@ def viewAccounts():
     return return_data
 
 
-@app.route('changeNotifMethod/', methods=['POST'])
+@app.route('/changeNotifMethod', methods=['POST'])
 def changeNotifMethod():
     data = request.get_json()
     account = User.query.filter_by(id=data.deviceid).first()
