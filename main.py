@@ -77,6 +77,7 @@ def fetchInformation(deviceID):
 
 @app.route('/createNewAccount', methods=['POST'])
 def storeInfo():
+    try:
         data = request.get_json()
         print('before setting variables')
         name = data['name']
@@ -86,6 +87,7 @@ def storeInfo():
         gradYear = data['gradYear']
         pfp = data['pfp']
         email = data['email']
+        # if name or deviceID or subgroup or
         print("after setting variables")
         print(name, deviceID, email, pfp, subgroup, status, gradYear)
         account = User(
@@ -100,8 +102,9 @@ def storeInfo():
         db.session.add(account)
         db.session.commit()
         return {'value': True}
-    # except:
-    #     return {'value': False}
+
+    except:
+        return {'value': False}
 
 
 @app.route('/viewAccounts')
@@ -120,6 +123,17 @@ def viewAccounts():
         return_data[account.name] = user
 
     return return_data
+
+
+@app.route('changeNotifMethod/', methods=['POST'])
+def changeNotifMethod():
+    data = request.get_json
+    account = User.query.filter_by(id=data.deviceid).first()
+    account.notifmethod = data.notifMethod
+    db.session.add(account)
+    db.session.commit()
+
+
 
 
 if __name__ == "__main__":
