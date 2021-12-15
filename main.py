@@ -108,7 +108,7 @@ def storeInfo():
 @app.route('/viewAccounts')
 def viewAccounts():
     accounts = User.query.all()
-    return_data = []
+    return_data = {}
     for account in accounts:
         user = {
             'name': account.name,
@@ -118,9 +118,7 @@ def viewAccounts():
             'email': account.email
         }
         print(user)
-        return_data.append(user)
-
-    return_data = tuple(return_data)
+        return_data[account.name] = user
 
     return return_data
 
