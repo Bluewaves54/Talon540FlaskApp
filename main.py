@@ -110,8 +110,17 @@ def viewAccounts():
     accounts = User.query.all()
     return_data = []
     for account in accounts:
-        print(account)
-        return_data.append(account)
+        user = {
+            'name': account.name,
+            'subgroup': account.subgroup,
+            'status': account.status,
+            'gradYear': account.gradyear,
+            'email': account.email
+        }
+        print(user)
+        return_data.append(user)
+
+    return_data = tuple(return_data)
 
     return return_data
 
