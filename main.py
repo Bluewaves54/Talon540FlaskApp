@@ -132,6 +132,7 @@ def changeNotifMethod():
     account.notifmethod = data.notifMethod
     db.session.add(account)
     db.session.commit()
+    return {'output': True}
 
 
 
