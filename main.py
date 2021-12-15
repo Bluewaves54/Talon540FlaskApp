@@ -105,5 +105,14 @@ def storeInfo():
         return {'value': False}
 
 
+@app.route('/viewAccounts', method=['GET'])
+def viewAccounts():
+    accounts = User.query.all()
+    return_data = []
+    for account in accounts:
+        print(account)
+        return_data.append(account)
+
+
 if __name__ == "__main__":
     app.run()
