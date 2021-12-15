@@ -77,7 +77,6 @@ def fetchInformation(deviceID):
 
 @app.route('/createNewAccount', methods=['POST'])
 def storeInfo():
-    try:
         data = request.get_json()
         print('before setting variables')
         name = data['name']
