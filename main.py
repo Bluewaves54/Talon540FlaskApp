@@ -101,8 +101,8 @@ def storeInfo():
         db.session.add(account)
         db.session.commit()
         return {'value': True}
-    except:
-        return {'value': False}
+    # except:
+    #     return {'value': False}
 
 
 @app.route('/viewAccounts')
