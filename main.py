@@ -129,7 +129,7 @@ def viewAccounts():
 def changeNotifMethod():
     data = request.get_json()
     account = User.query.filter_by(id=data['deviceid']).first()
-    account.notifmethod = data.notifMethod
+    account.notifmethod = data['notifMethod']
     db.session.add(account)
     db.session.commit()
     return {'output': True}
