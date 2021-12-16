@@ -1,7 +1,11 @@
-from flask import Flask, redirect, url_for, request
-import pandas
+from flask import Flask, redirect, url_for, request, g, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
+import jwt
+import datetime
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -19,11 +23,9 @@ class User(db.Model):
     name = db.Column(db.String)
     subgroup = db.Column(db.String)
     status = db.Column(db.String)
-    gradyear = db.Column(db.Integer)
     pfp = db.Column(db.String)
     email = db.Column(db.String)
     notifmethod = db.Column(db.String)
-
 
 db.init_app(app)
 
@@ -67,7 +69,6 @@ def fetchInformation(deviceID):
             'name': account.name,
             'subgroup': account.subgroup,
             'status': account.status,
-            'gradYear': account.gradyear,
             'pfp': account.pfp,
             'email': account.email,
             'notifmethod': account.notifmethod
@@ -86,20 +87,20 @@ def storeInfo():
         deviceID = data['deviceID']
         subgroup = data['subgroup']
         status = data['status']
-        gradYear = data['gradYear']
         pfp = data['pfp']
         email = data['email']
+        notifmethod = data['notifmethod']
         # if name or deviceID or subgroup or
         print("after setting variables")
-        print(name, deviceID, email, pfp, subgroup, status, gradYear)
+        print(name, deviceID, email, pfp, subgroup, status)
         account = User(
             deviceid=deviceID,
             name=name,
             subgroup=subgroup,
             status=status,
-            gradyear=gradYear,
             pfp=pfp,
-            email=email
+            email=email,
+            notifmethod=notifmethod
         )
         db.session.add(account)
         db.session.commit()
