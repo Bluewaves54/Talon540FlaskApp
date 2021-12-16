@@ -22,6 +22,7 @@ class User(db.Model):
     gradyear = db.Column(db.Integer)
     pfp = db.Column(db.String)
     email = db.Column(db.String)
+    notifmethod = db.Column(db.String)
 
 
 db.init_app(app)
@@ -68,7 +69,8 @@ def fetchInformation(deviceID):
             'status': account.status,
             'gradYear': account.gradyear,
             'pfp': account.pfp,
-            'email': account.email
+            'email': account.email,
+            'notifmethod': account.notifmethod
         }
     else:
         print('fail')
