@@ -1,11 +1,6 @@
 from flask import Flask, redirect, url_for, request, g, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
-import jwt
-import datetime
-from functools import wraps
 
 app = Flask(__name__)
 
@@ -27,23 +22,13 @@ class User(db.Model):
     email = db.Column(db.String)
     notifmethod = db.Column(db.String)
 
+
 db.init_app(app)
 
 
 @app.route('/')
 def homview():
     return "<h1>Welcome to Talon540 App</h1>"
-
-
-@app.route('/addName/<string:name>')
-def addName(name):
-    global current_name
-    current_name = name
-    print(current_name)
-    if name == '':
-        return {'output': False}
-    else:
-        return {'output': True}
 
 
 @app.route('/deleteAccount/<string:deviceID>')
@@ -119,7 +104,7 @@ def viewAccounts():
             'name': account.name,
             'subgroup': account.subgroup,
             'status': account.status,
-            'gradYear': account.gradyear,
+            'notifmethod': account.notifmethod,
             'email': account.email
         }
         print(user)
@@ -136,8 +121,6 @@ def changeNotifMethod():
     db.session.add(account)
     db.session.commit()
     return {'output': True}
-
-
 
 
 if __name__ == "__main__":
