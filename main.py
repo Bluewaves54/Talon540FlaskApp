@@ -1,6 +1,11 @@
 from flask import Flask, redirect, url_for, request, g, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.inspection import inspect
+from collections import defaultdict
 import os
+import gspread
+from gspread_dataframe import set_with_dataframe
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -26,6 +31,15 @@ class User(db.Model):
 db.init_app(app)
 
 
+def query_to_dict(rset):
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)
+    return result
+
+
 @app.route('/')
 def homview():
     return "<h1>Welcome to Talon540 App</h1>"
@@ -40,6 +54,16 @@ def deleteAccount(deviceid):
         return {'success': True}
     else:
         return {'success': False}
+
+
+@app.route('/writeToSheets/signOutTable/<string:deviceid>')
+def writeToSheets(deviceid):
+    account = User.query.filter_by(deviceid=deviceid).first()
+    df = pd.DataFrame(query_to_dict(account))
+    gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
+    sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
+    worksheet = sh.get_worksheet(0)
+    set_with_dataframe(worksheet, df)
 
 
 @app.route('/fetchInformation/<string:deviceid>')
