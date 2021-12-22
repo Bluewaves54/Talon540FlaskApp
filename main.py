@@ -64,6 +64,7 @@ def writeToSheets(deviceid):
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
     worksheet = sh.get_worksheet(0)
     set_with_dataframe(worksheet, df)
+    return {'output': True}
 
 
 @app.route('/fetchInformation/<string:deviceid>')
