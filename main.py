@@ -79,7 +79,10 @@ def writeToSheets(deviceid, room):
     df = pd.DataFrame(query_to_dict(currentSOTable))
     gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
-    worksheet = sh.get_worksheet(datetime.datetime.today().day - 1)
+    try:
+        worksheet = sh.get_worksheet(0)
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}')
     set_with_dataframe(worksheet, df)
     return {'output': True}
 
