@@ -35,3 +35,4 @@ Werkzeug==1.0.1
 psycopg2
 gunicorn
 gspread~=5.1.1
+gspread_dataframe
