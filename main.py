@@ -67,7 +67,7 @@ def fetchInformation(deviceid):
 def updateInfo():
     data = request.get_json()
     account = User.query.filter_by(deviceid=data['deviceid']).first()
-    account.notifmethod = data['notifMethod']
+    account.notifmethod = data['notifmethod']
     account.subgroup = data['subgroup']
     account.status = data['status']
     db.session.add(account)
