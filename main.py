@@ -109,7 +109,7 @@ def writeToSheets():
     try:
         worksheet = sh.worksheet(f'Day {datetime.datetime.today().day}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}')
+        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}', rows=500, cols=10)
     set_with_dataframe(worksheet, SIdf)
     set_with_dataframe(worksheet, SOdf, row=1, col=4)
 
