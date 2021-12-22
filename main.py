@@ -65,11 +65,11 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/writeToSheets/signOutTable/<string:deviceid>/<string:name>/<string:room>')
-def writeToSheets(deviceid, name, room):
+@app.route('/writeToSheets/signOutTable/<string:deviceid>/<string:room>')
+def writeToSheets(deviceid, room):
     account = User.query.filter_by(deviceid=deviceid).first()
     signOutEntry = SignOutTable(
-        name=name,
+        name=account.name,
         room=room,
         time=datetime.datetime.now().time()
     )
