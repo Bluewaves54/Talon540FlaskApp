@@ -68,10 +68,10 @@ def deleteAccount(deviceid):
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
 def writeToSheets():
     data = request.get_json()
-    account = User.query.filter_by(deviceid=data.deviceid).first()
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
     signOutEntry = SignOutTable(
         name=account.name,
-        room=data.room,
+        room=data['room'],
         time=datetime.datetime.now().time()
     )
     db.session.add(signOutEntry)
