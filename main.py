@@ -107,7 +107,7 @@ def writeToSheets():
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
 
     try:
-        worksheet = sh.get_worksheet(f'Day {datetime.datetime.today().day}')
+        worksheet = sh.worksheet(f'Day {datetime.datetime.today().day}')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}')
     set_with_dataframe(worksheet, SIdf)
