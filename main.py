@@ -37,6 +37,14 @@ class SignOutTable(db.Model):
     time = db.Column(db.String)
 
 
+class SignInTable(db.Model):
+    __tablename__ = 'signintable'
+
+    name = db.Column(db.String, primary_key=True)
+    room = db.Column(db.String)
+    time = db.Column(db.String)
+
+
 db.init_app(app)
 
 
@@ -67,32 +75,44 @@ def deleteAccount(deviceid):
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
 def writeToSheets():
-    print('entered function')
     data = request.get_json()
-    print('retrieved data')
+
     account = User.query.filter_by(deviceid=data['deviceid']).first()
-    print('filtered through accounts')
-    signOutEntry = SignOutTable(
-        name=account.name,
-        room=data['room'],
-        time=datetime.datetime.now().time()
-    )
-    print('instantiated signOutEntry')
-    db.session.add(signOutEntry)
+
+    entryExists = SignInTable.query.filter_by(name=account.name).first()
+
+    if entryExists is None:
+        entry = SignInTable(
+            name=account.name,
+            room=data['room'],
+            time=datetime.datetime.now().time()
+        )
+
+    elif entryExists is not None:
+        entry = SignOutTable(
+            name=account.name,
+            room=data['room'],
+            time=datetime.datetime.now().time()
+        )
+
+    db.session.add(entry)
     db.session.commit()
-    print('added and committed signOutEntry to db')
+
     currentSOTable = db.session.query(SignOutTable).all()
-    print('retrieved Signout table')
-    df = pd.DataFrame(query_to_dict(currentSOTable))
+    SOdf = pd.DataFrame(query_to_dict(currentSOTable))
+    currentSITable = db.session.query(SignInTable).all()
+    SIdf = pd.DataFrame(query_to_dict(currentSITable))
+
     gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
-    print('connected to spreadsheet')
+
     try:
-        worksheet = sh.get_worksheet(0)
+        worksheet = sh.get_worksheet(f'Day {datetime.datetime.today().day}')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}')
-    set_with_dataframe(worksheet, df)
-    print('connected to worksheet')
+    set_with_dataframe(worksheet, SIdf)
+    set_with_dataframe(worksheet, SOdf, row=1, col=4)
+
     return {
         'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
         'worksheet_key': worksheet.id
