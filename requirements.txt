@@ -34,3 +34,4 @@ urllib3==1.26.7
 Werkzeug==1.0.1
 psycopg2
 gunicorn
+gspread~=5.1.1
