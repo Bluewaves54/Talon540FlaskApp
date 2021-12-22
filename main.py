@@ -58,7 +58,7 @@ def deleteAccount(deviceid):
 
 @app.route('/writeToSheets/signOutTable/<string:deviceid>')
 def writeToSheets(deviceid):
-    account = User.query.filter_by(deviceid=deviceid).first()
+    account = db.session.query(User).all()
     df = pd.DataFrame(query_to_dict(account))
     gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
