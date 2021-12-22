@@ -73,7 +73,7 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/writeToSheets/signOutTable', methods=['POST'])
+@app.route('/writeToSheets', methods=['POST'])
 def writeToSheets():
     data = request.get_json()
 
