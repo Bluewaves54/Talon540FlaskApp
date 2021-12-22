@@ -6,6 +6,7 @@ import os
 import gspread
 from gspread_dataframe import set_with_dataframe
 import pandas as pd
+import datetime
 
 app = Flask(__name__)
 
@@ -26,6 +27,14 @@ class User(db.Model):
     pfp = db.Column(db.String)
     email = db.Column(db.String)
     notifmethod = db.Column(db.String)
+
+
+class SignOutTable(db.Model):
+    __tablename__ = 'signouttable'
+
+    name = db.Column(db.String)
+    room = db.Column(db.String)
+    time = db.Column(db.String)
 
 
 db.init_app(app)
@@ -56,13 +65,21 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/writeToSheets/signOutTable/<string:deviceid>')
-def writeToSheets(deviceid):
-    account = db.session.query(User).all()
-    df = pd.DataFrame(query_to_dict(account))
+@app.route('/writeToSheets/signOutTable/<string:deviceid>/<string:name>/<string:room>')
+def writeToSheets(deviceid, name, room):
+    account = User.query.filter_by(deviceid=deviceid).first()
+    signOutEntry = SignOutTable(
+        name=name,
+        room=room,
+        time=datetime.datetime.now().time()
+    )
+    db.session.add(signOutEntry)
+    db.session.commit()
+    currentSOTable = db.session.query(SignOutTable).all()
+    df = pd.DataFrame(query_to_dict(currentSOTable))
     gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
-    worksheet = sh.get_worksheet(0)
+    worksheet = sh.get_worksheet(datetime.datetime.today().day - 1)
     set_with_dataframe(worksheet, df)
     return {'output': True}
 
