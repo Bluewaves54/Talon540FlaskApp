@@ -65,12 +65,13 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/writeToSheets/signOutTable/<string:deviceid>/<string:room>')
-def writeToSheets(deviceid, room):
-    account = User.query.filter_by(deviceid=deviceid).first()
+@app.route('/writeToSheets/signOutTable', methods=['POST'])
+def writeToSheets():
+    data = request.get_json()
+    account = User.query.filter_by(deviceid=data.deviceid).first()
     signOutEntry = SignOutTable(
         name=account.name,
-        room=room,
+        room=data.room,
         time=datetime.datetime.now().time()
     )
     db.session.add(signOutEntry)
@@ -84,7 +85,10 @@ def writeToSheets(deviceid, room):
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}')
     set_with_dataframe(worksheet, df)
-    return {'output': True}
+    return {
+        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
+        'worksheet_key': worksheet.id
+    }
 
 
 @app.route('/fetchInformation/<string:deviceid>')
