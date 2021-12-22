@@ -31,9 +31,9 @@ def homview():
     return "<h1>Welcome to Talon540 App</h1>"
 
 
-@app.route('/deleteAccount/<string:deviceID>')
-def deleteAccount(deviceID):
-    account = User.query.filter_by(deviceid=deviceID).first()
+@app.route('/deleteAccount/<string:deviceid>')
+def deleteAccount(deviceid):
+    account = User.query.filter_by(deviceid=deviceid).first()
     if account is not None:
         db.session.delete(account)
         db.session.commit()
@@ -42,9 +42,9 @@ def deleteAccount(deviceID):
         return {'success': False}
 
 
-@app.route('/fetchInformation/<string:deviceID>')
-def fetchInformation(deviceID):
-    account = User.query.filter_by(deviceid=deviceID).first()
+@app.route('/fetchInformation/<string:deviceid>')
+def fetchInformation(deviceid):
+    account = User.query.filter_by(deviceid=deviceid).first()
     print(account)
     if account is not None:
         print('success')
@@ -61,6 +61,18 @@ def fetchInformation(deviceID):
     else:
         print('fail')
         return {'output': False}
+
+
+@app.route('/updateInfo', methods=['POST'])
+def updateInfo():
+    data = request.get_json()
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
+    account.notifmethod = data['notifMethod']
+    account.subgroup = data['subgroup']
+    account.status = data['status']
+    db.session.add(account)
+    db.session.commit()
+    return {'output': True}
 
 
 @app.route('/createNewAccount', methods=['POST'])

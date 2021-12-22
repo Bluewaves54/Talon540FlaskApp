@@ -1,0 +1,46 @@
+Metadata-Version: 2.1
+Name: Flask-of-Oil
+Version: 1.1.0
+Summary: Flask OAuth Filter - an OAuth Interceptor Logic
+Home-page: https://github.com/curity/flask-of-oil
+Author: Curity AB
+Author-email: info@curity.io
+License: Apache Software License
+Keywords: oauth,flask,introspection,access token,jwt,opaque
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Security
+Requires-Dist: requests
+Requires-Dist: cachelib
+Requires-Dist: Flask
+Requires-Dist: pyjwkest
+
+Flask OAuth Filter - an OAuth Interceptor Logic
+-----------------------------------------------
+
+This library provides an extension for protecting APIs with OAuth when using Flask.
+
+Installation
+------------
+
+You can either install this module with pip: ``pip install -U flask-of-oil``
+
+Usage
+-----
+
+Please look `here <https://github.com/curityio/flask-of-oil>`_ for more information on how to use this module.
+
+Questions and Support
+---------------------
+
+For questions and support, contact Curity AB:
+
+info@curity.io
+
+Copyright (C) 2016 Curity AB.
+
