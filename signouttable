@@ -1,0 +1,126 @@
+which psql
+sudo mkdir -p /etc/paths.d && echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+h
+help
+\?
+heroku pg:info
+\q
+/dt
+\dt
+\dt
+\dt
+CREATE TABLE Accounts(
+id SERIAL PRIMARY KEY,
+deviceID TEXT UNIQUE,
+name TEXT,
+subgroup TEXT,
+status TEXT,
+gradYear integer);
+CREATE TABLE Accounts(
+id SERIAL PRIMARY KEY,
+deviceID TEXT UNIQUE,
+name TEXT,
+subgroup TEXT,
+status TEXT,
+gradYear integer);
+\d Accounts
+\d Accounts
+\d Accounts
+\d Accounts
+\d Accounts
+select * from Accounts
+\q
+\d Accounts
+\d Accounts
+select * from acconuts
+select * from accounts
+select * from accounts;
+SELECT * FROM accounts;
+SELECT * FROM accounts;
+ALTER TABLE accounts
+ADD COLUMN pfp TEXT;
+\q
+\d accounts
+SELECT * FROM accounts;
+DELETE FROM accounts;
+SELECT * FROM accounts
+SELECT * FROM accounts;
+\q
+SELECT * FROM accounts;
+ALTER TABLE accounts;
+ALTER TABLE accounts
+ADD COLUMN pfp TEXT
+;
+ADD COLUMN email TEXT;
+ADD COLUMN email TEXT;
+\q
+ALTER TABLE accounts
+ADD COLUMN email TEXT;
+SELECT * FROM accounts
+SELECT * FROM accounts;
+SELECT * FROM accounts;
+SELECT * FROM accounts;
+DELETE FROM accounts;
+\q
+SELECT * FROM accounts;
+SELECT * FROM accounts;
+SELECT * FROM accounts;
+ALTER TABLE accounts
+ADD COLUMN notifmethod TEXT;
+\q
+ALTER TABLE accounts
+ADD COLUMN notifmethod TEXT
+;
+SELECT * FROM accounts;
+SELECT * FROM accounts
+;
+\q
+SELECT * FROM accounst
+;
+SELECT * FROM accounts
+;
+SELECT * FROM accounts
+;
+SELECT * FROM accounts
+;
+alter table accounts
+drop column gradyear;
+\q
+select * from accounts;
+select * from accounts;
+select * from accounts;
+select * from accounts;
+q
+\q
+select * from accounts;
+create table signouttable
+;
+create table signouttable;
+create table signouttable {
+;
+create table signouttable (
+name TEXT,
+room TEXT,
+time TEXT)
+;
+\q
+create table signouttable (
+name TEXT,
+room TEXT,
+time TEXT)
+;
+select * from signouttable
+\signouttable
+/signouttable
+signouttable\
+/signouttable
+signouttable/
+;
+signouttable/
+;
+\dt
+\dt signouttable
+;
+\t signouttable
+;
+\s signouttable
