@@ -161,9 +161,9 @@ def writeToSheetsSignOutTable():
     SOdf = pd.DataFrame(query_to_dict(SignOutTable.query.all()))
 
     try:
-        worksheet = sh.worksheet(f'Day {NOW.day}')
+        worksheet = sh.worksheet(f'Day {NOW.date()}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
+        worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
         worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
@@ -204,7 +204,7 @@ def writeToSheetsSignInTable():
     SIdf = pd.DataFrame(query_to_dict(SignInTable.query.all()))
 
     try:
-        worksheet = sh.worksheet(f'Day {NOW.day}')
+        worksheet = sh.worksheet(f'Day {NOW.date()}')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
         worksheet.update('A1', 'Sign In')
