@@ -7,6 +7,9 @@ import gspread
 from gspread_dataframe import set_with_dataframe
 import pandas as pd
 import datetime
+import pytz
+
+NOW = datetime.datetime.now(pytz.timezone('EST'))
 
 app = Flask(__name__)
 
@@ -85,14 +88,14 @@ def writeToSheets():
         entry = SignInTable(
             name=account.name,
             room=data['room'],
-            time=datetime.datetime.now().time()
+            time=NOW.time()
         )
 
     elif entryExists is not None:
         entry = SignOutTable(
             name=account.name,
             room=data['room'],
-            time=datetime.datetime.now().time()
+            time=NOW.time()
         )
         db.session.delete(entryExists)
         db.session.commit()
@@ -109,12 +112,12 @@ def writeToSheets():
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
 
     try:
-        worksheet = sh.worksheet(f'Day {datetime.datetime.today().day}')
+        worksheet = sh.worksheet(f'Day {NOW.day}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}', rows=500, cols=10)
-        worksheet.update('A1', 'Sign In')
-        worksheet.update('A5', 'Sign Out')
-        worksheet.format('A1:A5', {'textFormat': {'bold': True}})
+        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
+        worksheet.update('B1', 'Sign In')
+        worksheet.update('F1', 'Sign Out')
+        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
     set_with_dataframe(worksheet, SIdf, row=2)
     set_with_dataframe(worksheet, SOdf, row=2, col=5)
 
