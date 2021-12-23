@@ -38,8 +38,7 @@ class User(db.Model):
 class SignOutTable(db.Model):
     __tablename__ = 'signouttable'
 
-    key = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, primary_key=True)
     room = db.Column(db.String)
     time = db.Column(db.String)
 
@@ -47,8 +46,7 @@ class SignOutTable(db.Model):
 class SignInTable(db.Model):
     __tablename__ = 'signintable'
 
-    key = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, primary_key=True)
     room = db.Column(db.String)
     time = db.Column(db.String)
 
@@ -105,7 +103,13 @@ def writeToSheetsSignOutTable():
     db.session.add(entry)
     db.session.commit()
 
-    SOdf = pd.DataFrame(query_to_dict(db.session.query(SignOutTable).all()))
+    SOdf = pd.DataFrame(
+        query_to_dict(
+            db.session.query().with_entities(
+                SignOutTable.name,
+                SignOutTable.room,
+                SignOutTable.time
+            )))
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
@@ -146,7 +150,13 @@ def writeToSheetsSignInTable():
     db.session.add(entry)
     db.session.commit()
 
-    SIdf = pd.DataFrame(query_to_dict(db.session.query(SignInTable).all()))
+    SIdf = pd.DataFrame(
+        query_to_dict(
+            db.session.query().with_entities(
+                SignInTable.name,
+                SignInTable.room,
+                SignInTable.time
+            )))
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
