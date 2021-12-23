@@ -89,7 +89,7 @@ def writeToSheetsSignOutTable():
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
 
-    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
+    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
         db.session.query(SignInTable).delete()
         db.session.query(SignOutTable).delete()
         db.session.commit()
@@ -130,7 +130,7 @@ def writeToSheetsSignInTable():
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
 
-    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
+    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
         db.session.query(SignInTable).delete()
         db.session.query(SignOutTable).delete()
         db.session.commit()
