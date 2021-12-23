@@ -9,8 +9,6 @@ import pandas as pd
 import datetime
 import pytz
 
-NOW = datetime.datetime.now(pytz.timezone('EST'))
-
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'secret'
@@ -88,14 +86,14 @@ def writeToSheets():
         entry = SignInTable(
             name=account.name,
             room=data['room'],
-            time=NOW.time()
+            time=datetime.datetime.now(pytz.timezone('EST')).time()
         )
 
     elif entryExists is not None:
         entry = SignOutTable(
             name=account.name,
             room=data['room'],
-            time=NOW.time()
+            time=datetime.datetime.now(pytz.timezone('EST')).time()
         )
         db.session.delete(entryExists)
         db.session.commit()
@@ -112,9 +110,9 @@ def writeToSheets():
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
 
     try:
-        worksheet = sh.worksheet(f'Day {NOW.day}')
+        worksheet = sh.worksheet(f'Day {datetime.datetime.now(pytz.timezone("EST")).day}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
+        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.now(pytz.timezone("EST")).day}', rows=500, cols=10)
         worksheet.update('B1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
