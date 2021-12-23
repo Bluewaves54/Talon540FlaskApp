@@ -105,7 +105,7 @@ def writeToSheetsSignOutTable():
 
     SOdf = pd.DataFrame(
         query_to_dict(
-            db.session.query().with_entities(
+            db.session.query(SignOutTable).with_entities(
                 SignOutTable.name,
                 SignOutTable.room,
                 SignOutTable.time
@@ -152,7 +152,7 @@ def writeToSheetsSignInTable():
 
     SIdf = pd.DataFrame(
         query_to_dict(
-            db.session.query().with_entities(
+            db.session.query(SignInTable).with_entities(
                 SignInTable.name,
                 SignInTable.room,
                 SignInTable.time
