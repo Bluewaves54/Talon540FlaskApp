@@ -105,6 +105,8 @@ def writeToSheetsSignOutTable():
 
     currentSOTable = db.session.query(SignOutTable).all()
 
+    print(currentSOTable)
+
     currentSOdict = query_to_dict(currentSOTable)
 
     SOdf = pd.DataFrame(currentSOdict)
