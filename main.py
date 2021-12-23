@@ -46,6 +46,11 @@ class User(db.Model):
     email = db.Column(db.String)
     notifmethod = db.Column(db.String)
 
+    @classmethod
+    def getByDeviceID(cls, deviceid):
+        return cls.query.filter_by(deviceid=deviceid).first()
+
+
 # defining SignOutTable model
 
 
@@ -100,33 +105,33 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/checkLogStatus', methods=['POST'])
-def checkLogStatus():
-    data = request.get_json()
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    print(account)
-    currentSOTable = SignOutTable.query.all()
-    print(currentSOTable)
-    occurencesOfSO = 0
-    for i in currentSOTable:
-        if i.name == account.name:
-            occurencesOfSO += 1
-
-    print(occurencesOfSO)
-
-    currentSITable = SignInTable.query.all()
-    print(currentSITable)
-    occurencesOfSI = 0
-    for i in currentSITable:
-        if i.name == account.name:
-            occurencesOfSI += 1
-
-    print(occurencesOfSI)
-
-    if occurencesOfSI > occurencesOfSO:
-        return {'output': 'signout'}
-    elif occurencesOfSO == occurencesOfSI:
-        return {'output': 'signin'}
+# @app.route('/checkLogStatus', methods=['POST'])
+# def checkLogStatus():
+#     data = request.get_json()
+#     account = User.query.filter_by(deviceid=data['deviceid']).first()
+#     print(account)
+#     currentSOTable = SignOutTable.query.all()
+#     print(currentSOTable)
+#     occurencesOfSO = 0
+#     for i in currentSOTable:
+#         if i.name == account.name:
+#             occurencesOfSO += 1
+#
+#     print(occurencesOfSO)
+#
+#     currentSITable = SignInTable.query.all()
+#     print(currentSITable)
+#     occurencesOfSI = 0
+#     for i in currentSITable:
+#         if i.name == account.name:
+#             occurencesOfSI += 1
+#
+#     print(occurencesOfSI)
+#
+#     if occurencesOfSI > occurencesOfSO:
+#         return {'output': 'signout'}
+#     elif occurencesOfSO == occurencesOfSI:
+#         return {'output': 'signin'}
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
@@ -201,7 +206,7 @@ def writeToSheetsSignInTable():
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
+        worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
         worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
@@ -215,9 +220,10 @@ def writeToSheetsSignInTable():
     }
 
 
-@app.route('/fetchInformation/<string:deviceid>')
-def fetchInformation(deviceid):
-    account = User.query.filter_by(deviceid=deviceid).first()
+@app.route('/fetchInformation/', methods=['POST'])
+def fetchInformation():
+    data = request.get_json()
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
     print(account)
     if account is not None:
         print('success')
@@ -296,16 +302,6 @@ def viewAccounts():
         return_data[account.name] = user
 
     return return_data
-
-
-@app.route('/changeNotifMethod', methods=['POST'])
-def changeNotifMethod():
-    data = request.get_json()
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    account.notifmethod = data['notifMethod']
-    db.session.add(account)
-    db.session.commit()
-    return {'output': True}
 
 
 if __name__ == "__main__":
