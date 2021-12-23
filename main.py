@@ -80,7 +80,7 @@ def deleteAccount(deviceid):
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
-def writeToSheets():
+def writeToSheetsSignOutTable():
     global NOW, gc, sh
 
     data = request.get_json()
@@ -121,7 +121,7 @@ def writeToSheets():
 
 
 @app.route('/writeToSheets/signInTable', methods=['POST'])
-def writeToSheets():
+def writeToSheetsSignInTable():
     global NOW, gc, sh
 
     data = request.get_json()
