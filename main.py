@@ -220,10 +220,9 @@ def writeToSheetsSignInTable():
     }
 
 
-@app.route('/fetchInformation', methods=['POST'])
-def fetchInformation():
-    data = request.get_json()
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
+@app.route('/fetchInformation/<string:deviceid>')
+def fetchInformation(deviceid):
+    account = User.query.filter_by(deviceid=deviceid).first()
     print(account)
     if account is not None:
         print('success')
