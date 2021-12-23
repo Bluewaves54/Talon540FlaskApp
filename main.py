@@ -79,13 +79,19 @@ def deleteAccount(deviceid):
 @app.route('/writeToSheets', methods=['POST'])
 def writeToSheets():
     global NOW
-    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
-        NOW = datetime.datetime.now(pytz.timezone('EST'))
+
     data = request.get_json()
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
 
     entryExists = SignInTable.query.filter_by(name=account.name).first()
+
+    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
+        db.session.query(SignInTable).delete()
+        db.session.query(SignOutTable).delete()
+        db.session.commit()
+
+        NOW = datetime.datetime.now(pytz.timezone('EST'))
 
     if entryExists is None:
         entry = SignInTable(
