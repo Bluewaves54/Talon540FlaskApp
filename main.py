@@ -18,6 +18,9 @@ db = SQLAlchemy(app)
 
 NOW = datetime.datetime.now(pytz.timezone('EST'))
 
+gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
+sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
+
 
 class User(db.Model):
     __tablename__ = 'accounts'
@@ -76,15 +79,13 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-@app.route('/writeToSheets', methods=['POST'])
+@app.route('/writeToSheets/signOutTable', methods=['POST'])
 def writeToSheets():
-    global NOW
+    global NOW, gc, sh
 
     data = request.get_json()
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
-
-    entryExists = SignInTable.query.filter_by(name=account.name).first()
 
     if datetime.datetime.now(pytz.timezone('EST')) != NOW:
         db.session.query(SignInTable).delete()
@@ -93,32 +94,57 @@ def writeToSheets():
 
         NOW = datetime.datetime.now(pytz.timezone('EST'))
 
-    if entryExists is None:
-        entry = SignInTable(
-            name=account.name,
-            room=data['room'],
-            time=NOW.time()
-        )
-
-    elif entryExists is not None:
-        entry = SignOutTable(
-            name=account.name,
-            room=data['room'],
-            time=NOW.time()
-        )
-        db.session.delete(entryExists)
-        db.session.commit()
+    entry = SignOutTable(
+        name=account.name,
+        room=data['room'],
+        time=NOW.time()
+    )
 
     db.session.add(entry)
     db.session.commit()
 
-    currentSOTable = db.session.query(SignOutTable).all()
-    SOdf = pd.DataFrame(query_to_dict(currentSOTable))
-    currentSITable = db.session.query(SignInTable).all()
-    SIdf = pd.DataFrame(query_to_dict(currentSITable))
+    SOdf = pd.DataFrame(query_to_dict(db.session.query(SignOutTable).all()))
 
-    gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
-    sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
+    try:
+        worksheet = sh.worksheet(f'Day {NOW.day}')
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
+        worksheet.update('B1', 'Sign In')
+        worksheet.update('F1', 'Sign Out')
+        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
+    set_with_dataframe(worksheet, SOdf, row=2, col=5)
+
+    return {
+        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
+        'worksheet_key': worksheet.id
+    }
+
+
+@app.route('/writeToSheets/signInTable', methods=['POST'])
+def writeToSheets():
+    global NOW, gc, sh
+
+    data = request.get_json()
+
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
+
+    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
+        db.session.query(SignInTable).delete()
+        db.session.query(SignOutTable).delete()
+        db.session.commit()
+
+        NOW = datetime.datetime.now(pytz.timezone('EST'))
+
+    entry = SignInTable(
+        name=account.name,
+        room=data['room'],
+        time=NOW.time()
+    )
+
+    db.session.add(entry)
+    db.session.commit()
+
+    SIdf = pd.DataFrame(query_to_dict(db.session.query(SignInTable).all()))
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
@@ -128,7 +154,6 @@ def writeToSheets():
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
     set_with_dataframe(worksheet, SIdf, row=2)
-    set_with_dataframe(worksheet, SOdf, row=2, col=5)
 
     return {
         'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
