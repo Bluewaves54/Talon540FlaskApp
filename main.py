@@ -38,17 +38,19 @@ class User(db.Model):
 class SignOutTable(db.Model):
     __tablename__ = 'signouttable'
 
+    key = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     room = db.Column(db.String)
-    time = db.Column(db.String, primary_key=True)
+    time = db.Column(db.String)
 
 
 class SignInTable(db.Model):
     __tablename__ = 'signintable'
 
+    key = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     room = db.Column(db.String)
-    time = db.Column(db.String, primary_key=True)
+    time = db.Column(db.String)
 
 
 db.init_app(app)
