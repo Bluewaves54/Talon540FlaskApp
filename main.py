@@ -38,9 +38,9 @@ class User(db.Model):
 class SignOutTable(db.Model):
     __tablename__ = 'signouttable'
 
-    name = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String)
     room = db.Column(db.String)
-    time = db.Column(db.String)
+    time = db.Column(db.String, primary_key=True)
 
 
 class SignInTable(db.Model):
