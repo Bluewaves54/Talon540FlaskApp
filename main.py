@@ -220,7 +220,7 @@ def writeToSheetsSignInTable():
     }
 
 
-@app.route('/fetchInformation/', methods=['POST'])
+@app.route('/fetchInformation', methods=['POST'])
 def fetchInformation():
     data = request.get_json()
     account = User.query.filter_by(deviceid=data['deviceid']).first()
