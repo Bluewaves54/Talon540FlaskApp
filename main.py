@@ -113,10 +113,10 @@ def writeToSheets():
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.today().day}', rows=500, cols=10)
         worksheet.update('A1', 'Sign In')
-        worksheet.update('A4', 'Sign Out')
-        worksheet.format('A1:A4', {'textFormat': {'bold': True}})
+        worksheet.update('A5', 'Sign Out')
+        worksheet.format('A1:A5', {'textFormat': {'bold': True}})
     set_with_dataframe(worksheet, SIdf, row=2)
-    set_with_dataframe(worksheet, SOdf, row=2, col=4)
+    set_with_dataframe(worksheet, SOdf, row=2, col=5)
 
     return {
         'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
