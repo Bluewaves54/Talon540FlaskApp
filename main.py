@@ -124,9 +124,9 @@ def checkLogStatus():
     print(occurencesOfSI)
 
     if occurencesOfSI > occurencesOfSO:
-        return {'output': 'signin'}
-    elif occurencesOfSO == occurencesOfSI:
         return {'output': 'signout'}
+    elif occurencesOfSO == occurencesOfSI:
+        return {'output': 'signin'}
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
