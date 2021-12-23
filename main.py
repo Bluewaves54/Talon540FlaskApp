@@ -1,3 +1,5 @@
+# imports
+
 from flask import Flask, redirect, url_for, request, g, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.inspection import inspect
@@ -9,17 +11,27 @@ import pandas as pd
 import datetime
 import pytz
 
+# initializing Flask app
+
 app = Flask(__name__)
+
+# configuring database with app
 
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+
+# creating database model session
 
 db = SQLAlchemy(app)
 
 NOW = datetime.datetime.now(pytz.timezone('EST'))
 
+# connecting with Google Sheets API
+
 gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
 sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
+
+# defining User model
 
 
 class User(db.Model):
@@ -34,6 +46,8 @@ class User(db.Model):
     email = db.Column(db.String)
     notifmethod = db.Column(db.String)
 
+# defining SignOutTable model
+
 
 class SignOutTable(db.Model):
     __tablename__ = 'signouttable'
@@ -42,6 +56,8 @@ class SignOutTable(db.Model):
     name = db.Column(db.String)
     room = db.Column(db.String)
     time = db.Column(db.String)
+
+# defining SignInTable model
 
 
 class SignInTable(db.Model):
@@ -52,10 +68,13 @@ class SignInTable(db.Model):
     room = db.Column(db.String)
     time = db.Column(db.String)
 
+# Initializing db session
+
 
 db.init_app(app)
 
 
+# function for converting SQLAlchemy query to dictionary for conversion to pandas DataFrame
 def query_to_dict(rset):
     result = defaultdict(list)
     for obj in rset:
@@ -79,6 +98,35 @@ def deleteAccount(deviceid):
         return {'success': True}
     else:
         return {'success': False}
+
+
+@app.route('/checkLogStatus', methods=['POST'])
+def checkLogStatus():
+    data = request.get_json()
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
+    print(account)
+    currentSOTable = SignOutTable.query.all()
+    print(currentSOTable)
+    occurencesOfSO = 0
+    for i in currentSOTable:
+        if i.name == account.name:
+            occurencesOfSO += 1
+
+    print(occurencesOfSO)
+
+    currentSITable = SignInTable.query.all()
+    print(currentSITable)
+    occurencesOfSI = 0
+    for i in currentSITable:
+        if i.name == account.name:
+            occurencesOfSI += 1
+
+    print(occurencesOfSI)
+
+    if occurencesOfSI > occurencesOfSO:
+        return {'output': 'signin'}
+    elif occurencesOfSO == occurencesOfSI:
+        return {'output': 'signout'}
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
