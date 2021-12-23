@@ -103,13 +103,7 @@ def writeToSheetsSignOutTable():
     db.session.add(entry)
     db.session.commit()
 
-    SOdf = pd.DataFrame(
-        query_to_dict(
-            db.session.query(SignOutTable).with_entities(
-                SignOutTable.name,
-                SignOutTable.room,
-                SignOutTable.time
-            )))
+    SOdf = pd.DataFrame(query_to_dict(db.session.query(SignOutTable).all()))
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
@@ -150,13 +144,7 @@ def writeToSheetsSignInTable():
     db.session.add(entry)
     db.session.commit()
 
-    SIdf = pd.DataFrame(
-        query_to_dict(
-            db.session.query(SignInTable).with_entities(
-                SignInTable.name,
-                SignInTable.room,
-                SignInTable.time
-            )))
+    SIdf = pd.DataFrame(query_to_dict(db.session.query(SignInTable).all()))
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.day}')
