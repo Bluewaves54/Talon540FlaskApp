@@ -111,10 +111,10 @@ def writeToSheetsSignOutTable():
         worksheet = sh.worksheet(f'Day {NOW.day}')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
-        worksheet.update('B1', 'Sign In')
+        worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
-    set_with_dataframe(worksheet, SOdf, row=2, col=5)
+    set_with_dataframe(worksheet, SOdf, row=2, col=6)
 
     return {
         'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
@@ -152,7 +152,7 @@ def writeToSheetsSignInTable():
         worksheet = sh.worksheet(f'Day {NOW.day}')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
-        worksheet.update('B1', 'Sign In')
+        worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
     set_with_dataframe(worksheet, SIdf, row=2)
