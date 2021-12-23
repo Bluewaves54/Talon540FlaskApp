@@ -99,7 +99,7 @@ def writeToSheetsSignOutTable():
     entry = SignOutTable(
         name=account.name,
         room=data['room'],
-        time=NOW.time()
+        time=datetime.datetime.now(pytz.timezone('EST')).time()
     )
 
     db.session.add(entry)
@@ -140,7 +140,7 @@ def writeToSheetsSignInTable():
     entry = SignInTable(
         name=account.name,
         room=data['room'],
-        time=NOW.time()
+        time=datetime.datetime.now(pytz.timezone('EST')).time()
     )
 
     db.session.add(entry)
