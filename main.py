@@ -16,6 +16,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 
 db = SQLAlchemy(app)
 
+NOW = datetime.datetime.now(pytz.timezone('EST'))
+
 
 class User(db.Model):
     __tablename__ = 'accounts'
@@ -76,6 +78,9 @@ def deleteAccount(deviceid):
 
 @app.route('/writeToSheets', methods=['POST'])
 def writeToSheets():
+    global NOW
+    if datetime.datetime.now(pytz.timezone('EST')) != NOW:
+        NOW = datetime.datetime.now(pytz.timezone('EST'))
     data = request.get_json()
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
@@ -86,14 +91,14 @@ def writeToSheets():
         entry = SignInTable(
             name=account.name,
             room=data['room'],
-            time=datetime.datetime.now(pytz.timezone('EST')).time()
+            time=NOW.time()
         )
 
     elif entryExists is not None:
         entry = SignOutTable(
             name=account.name,
             room=data['room'],
-            time=datetime.datetime.now(pytz.timezone('EST')).time()
+            time=NOW.time()
         )
         db.session.delete(entryExists)
         db.session.commit()
@@ -110,9 +115,9 @@ def writeToSheets():
     sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
 
     try:
-        worksheet = sh.worksheet(f'Day {datetime.datetime.now(pytz.timezone("EST")).day}')
+        worksheet = sh.worksheet(f'Day {NOW.day}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {datetime.datetime.now(pytz.timezone("EST")).day}', rows=500, cols=10)
+        worksheet = sh.add_worksheet(title=f'Day {NOW.day}', rows=500, cols=10)
         worksheet.update('B1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
