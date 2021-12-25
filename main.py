@@ -107,33 +107,29 @@ def deleteAccount(deviceid):
         return {'success': False}
 
 
-# @app.route('/checkLogStatus', methods=['POST'])
-# def checkLogStatus():
-#     data = request.get_json()
-#     account = User.query.filter_by(deviceid=data['deviceid']).first()
-#     print(account)
-#     currentSOTable = SignOutTable.query.all()
-#     print(currentSOTable)
-#     occurencesOfSO = 0
-#     for i in currentSOTable:
-#         if i.name == account.name:
-#             occurencesOfSO += 1
-#
-#     print(occurencesOfSO)
-#
-#     currentSITable = SignInTable.query.all()
-#     print(currentSITable)
-#     occurencesOfSI = 0
-#     for i in currentSITable:
-#         if i.name == account.name:
-#             occurencesOfSI += 1
-#
-#     print(occurencesOfSI)
-#
-#     if occurencesOfSI > occurencesOfSO:
-#         return {'output': 'signout'}
-#     elif occurencesOfSO == occurencesOfSI:
-#         return {'output': 'signin'}
+@app.route('/returnSpreadsheetKey', methods=['POST'])
+def returnSpreaksheetKey():
+    global NOW, gc, sh
+    data = request.get_json()
+    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
+        db.session.query(SignInTable).delete()
+        db.session.query(SignOutTable).delete()
+        db.session.commit()
+
+        NOW = datetime.datetime.now(pytz.timezone('EST'))
+    try:
+        worksheet = sh.worksheet(f'Day {data["date"]}')
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sh.add_worksheet(title=f'Day {data["date"]}', rows=500, cols=10)
+        worksheet.update('A1', 'Sign In')
+        worksheet.update('F1', 'Sign Out')
+        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
+
+    return {
+        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
+        'worksheet_key': worksheet.id
+    }
+
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
