@@ -95,7 +95,7 @@ def homview():
 
 
 @app.route('/deleteAccount/', methods=['POST'])
-def deleteAccount(deviceid):
+def deleteAccount():
     data = request.get_json()
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
@@ -129,7 +129,6 @@ def returnSpreaksheetKey():
         'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
         'worksheet_key': worksheet.id
     }
-
 
 
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
