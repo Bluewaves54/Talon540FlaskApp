@@ -94,9 +94,11 @@ def homview():
     return "<h1>Welcome to Talon540 App</h1>"
 
 
-@app.route('/deleteAccount/<string:deviceid>')
+@app.route('/deleteAccount/', methods=['POST'])
 def deleteAccount(deviceid):
-    account = User.query.filter_by(deviceid=deviceid).first()
+    data = request.get_json()
+
+    account = User.query.filter_by(deviceid=data['deviceid']).first()
     if account is not None:
         db.session.delete(account)
         db.session.commit()
