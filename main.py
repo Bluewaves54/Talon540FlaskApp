@@ -161,6 +161,7 @@ def writeToSheetsSignOutTable():
         worksheet = sh.worksheet(f'Day {NOW.date()}')
     except gspread.exceptions.WorksheetNotFound:
         SignInTable.query.delete()
+        db.session.commit()
         SignOutTable.query.delete()
         db.session.commit()
         worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
@@ -207,6 +208,7 @@ def writeToSheetsSignInTable():
         worksheet = sh.worksheet(f'Day {NOW.date()}')
     except gspread.exceptions.WorksheetNotFound:
         SignInTable.query.delete()
+        db.session.commit()
         SignOutTable.query.delete()
         db.session.commit()
         worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
