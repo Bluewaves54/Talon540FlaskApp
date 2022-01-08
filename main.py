@@ -120,7 +120,7 @@ def returnSpreaksheetKey():
     try:
         worksheet = sh.worksheet(f'Day {data["date"]}')
     except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=f'Day {data["date"]}', rows=500, cols=10)
+        worksheet = sh.add_worksheet(title=[]|f"Day {data['date']}", rows=500, cols=10)
         worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
@@ -250,9 +250,9 @@ def fetchInformation(deviceid):
 def updateInfo():
     data = request.get_json()
     account = User.query.filter_by(deviceid=data['deviceid']).first()
-    account.notifmethod = data['notifmethod']
-    account.subgroup = data['subgroup']
-    account.status = data['status']
+    account.notifmethod = (data['notifmethod'] if data['notifmethod'] is not None else account.notifmethod)
+    account.subgroup = (data['subgroup'] if data['subgroup'] is not None else account.subgroup)
+    account.status = (data['status'] if data['status'] is not None else account.status)
     db.session.add(account)
     db.session.commit()
     return {'output': True}
