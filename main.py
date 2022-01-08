@@ -134,10 +134,13 @@ def returnSpreaksheetKey():
 @app.route('/writeToSheets/signOutTable', methods=['POST'])
 def writeToSheetsSignOutTable():
     global NOW, gc, sh
+    print(NOW, gc, sh)
 
     data = request.get_json()
+    print(data)
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
+    print(account)
 
     if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
         db.session.query(SignInTable).delete()
@@ -145,20 +148,24 @@ def writeToSheetsSignOutTable():
         db.session.commit()
 
         NOW = datetime.datetime.now(pytz.timezone('EST'))
+        print(NOW)
 
     entry = SignOutTable(
         name=account.name,
         room=data['room'],
         time=datetime.datetime.now(pytz.timezone('EST')).time()
     )
+    print(entry)
 
     db.session.add(entry)
     db.session.commit()
 
     SOdf = pd.DataFrame(query_to_dict(SignOutTable.query.all()))
+    print(SOdf)
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.date()}')
+        print(worksheet)
     except gspread.exceptions.WorksheetNotFound:
         SignInTable.query.delete()
         db.session.commit()
@@ -168,6 +175,7 @@ def writeToSheetsSignOutTable():
         worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
+        print(worksheet)
     set_with_dataframe(worksheet, SOdf, row=2, col=6)
 
     print(worksheet.id)
@@ -181,10 +189,13 @@ def writeToSheetsSignOutTable():
 @app.route('/writeToSheets/signInTable', methods=['POST'])
 def writeToSheetsSignInTable():
     global NOW, gc, sh
+    print(NOW, sh, gc)
 
     data = request.get_json()
+    print(data)
 
     account = User.query.filter_by(deviceid=data['deviceid']).first()
+    print(account)
 
     if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
         db.session.query(SignInTable).delete()
@@ -192,20 +203,24 @@ def writeToSheetsSignInTable():
         db.session.commit()
 
         NOW = datetime.datetime.now(pytz.timezone('EST'))
+        print(NOW)
 
     entry = SignInTable(
         name=account.name,
         room=data['room'],
         time=datetime.datetime.now(pytz.timezone('EST')).time()
     )
+    print(entry)
 
     db.session.add(entry)
     db.session.commit()
 
     SIdf = pd.DataFrame(query_to_dict(SignInTable.query.all()))
+    print(SIdf)
 
     try:
         worksheet = sh.worksheet(f'Day {NOW.date()}')
+        print(worksheet)
     except gspread.exceptions.WorksheetNotFound:
         SignInTable.query.delete()
         db.session.commit()
@@ -215,6 +230,7 @@ def writeToSheetsSignInTable():
         worksheet.update('A1', 'Sign In')
         worksheet.update('F1', 'Sign Out')
         worksheet.format('A1:F1', {'textFormat': {'bold': True}})
+        print(worksheet)
     set_with_dataframe(worksheet, SIdf, row=2)
 
     print(worksheet.id)
