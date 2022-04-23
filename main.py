@@ -1,38 +1,21 @@
 # imports
-
-from flask import Flask, redirect, url_for, request, g, jsonify
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.inspection import inspect
 from collections import defaultdict
 import os
-import gspread
-from gspread_dataframe import set_with_dataframe
-import pandas as pd
 import datetime
 import pytz
-
+import users
+import attendance as att
+import inventory as inv
 # initializing Flask app
-
 app = Flask(__name__)
-
 # configuring database with app
-
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
-
 # creating database model session
-
 db = SQLAlchemy(app)
-
-NOW = datetime.datetime.now(pytz.timezone('EST'))
-
-# connecting with Google Sheets API
-
-gc = gspread.service_account(filename="talon540sheets-fc00ab1e88d1.json")
-sh = gc.open_by_key("12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0")
-
-# defining User model
-
 
 class User(db.Model):
     __tablename__ = 'accounts'
@@ -50,9 +33,7 @@ class User(db.Model):
     def getByDeviceID(cls, deviceid):
         return cls.query.filter_by(deviceid=deviceid).first()
 
-
 # defining SignOutTable model
-
 
 class SignOutTable(db.Model):
     __tablename__ = 'signouttable'
@@ -64,7 +45,6 @@ class SignOutTable(db.Model):
 
 # defining SignInTable model
 
-
 class SignInTable(db.Model):
     __tablename__ = 'signintable'
 
@@ -73,12 +53,32 @@ class SignInTable(db.Model):
     room = db.Column(db.String)
     time = db.Column(db.String)
 
-# Initializing db session
+# defining Inventory Items model
 
+# class Item(db.Model):
+#     __tablename__ = 'inventory'
+#
+#     key = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String)
+#     company = db.Column(db.Integer)
+#     cost = db.Column(db.Float)
+#     location = db.Column(db.Integer)
+#     type = db.Column(db.Integer)
+#     count = db.Column(db.Integer)
 
+# defining Manufacturing Company model
+
+class ManuComp(db.Model):
+    __tablename__ = 'manufacturingcompanies'
+
+    key = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    phone = db.Column(db.Integer)
+    address = db.Column(db.String)
+    website = db.Column(db.String)
+
+NOW = datetime.datetime.now(pytz.timezone('EST'))
 db.init_app(app)
-
-
 # function for converting SQLAlchemy query to dictionary for conversion to pandas DataFrame
 def query_to_dict(rset):
     result = defaultdict(list)
@@ -88,241 +88,48 @@ def query_to_dict(rset):
             result[key].append(x.value)
     return result
 
-
 @app.route('/')
-def homview():
+def homeview():
     return "<h1>Welcome to Talon540 App</h1>"
 
 
-@app.route('/deleteAccount/', methods=['POST'])
-def deleteAccount():
+@app.route('/users', methods=['GET', 'POST'])
+def allUserEndpoints():
     data = request.get_json()
-
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    if account is not None:
-        db.session.delete(account)
-        db.session.commit()
-        return {'success': True}
-    else:
-        return {'success': False}
-
-
-@app.route('/returnSpreadsheetKey', methods=['POST'])
-def returnSpreaksheetKey():
-    global NOW, gc, sh
-    data = request.get_json()
-    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
-        db.session.query(SignInTable).delete()
-        db.session.query(SignOutTable).delete()
-        db.session.commit()
-
-        NOW = datetime.datetime.now(pytz.timezone('EST'))
     try:
-        worksheet = sh.worksheet(f'Day {data["date"]}')
-    except gspread.exceptions.WorksheetNotFound:
-        worksheet = sh.add_worksheet(title=[]|f"Day {data['date']}", rows=500, cols=10)
-        worksheet.update('A1', 'Sign In')
-        worksheet.update('F1', 'Sign Out')
-        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
+        if data['function'] == 'deleteAccount':
+            return users.deleteAccount(data)
+        elif data['function'] == 'viewAccounts':
+            return users.viewAccounts(data)
+        elif data['function'] == 'storeInfo':
+            return users.storeInfo(data)
+        elif data['function'] == 'updateInfo':
+            return users.updateInfo(data)
+        elif data['function'] == 'fetchInformation':
+            return users.fetchInformation(data)
+        else:
+            return {'value': 'function not found'}
+    except Exception as e:
+        return {'error': str(e)}
 
-    return {
-        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
-        'worksheet_key': worksheet.id
-    }
 
-
-@app.route('/writeToSheets/signOutTable', methods=['POST'])
-def writeToSheetsSignOutTable():
-    global NOW, gc, sh
-    print(NOW, gc, sh)
-
+@app.route('/attendance', methods=['GET', 'POST'])
+def allAttendanceEndpoints():
     data = request.get_json()
-    print(data)
-
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    print(account)
-
-    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
-        db.session.query(SignInTable).delete()
-        db.session.query(SignOutTable).delete()
-        db.session.commit()
-
-        NOW = datetime.datetime.now(pytz.timezone('EST'))
-        print(NOW)
-
-    entry = SignOutTable(
-        name=account.name,
-        room=data['room'],
-        time=datetime.datetime.now(pytz.timezone('EST')).time()
-    )
-    print(entry)
-
-    db.session.add(entry)
-    db.session.commit()
-
-    SOdf = pd.DataFrame(query_to_dict(SignOutTable.query.all()))
-    print(SOdf)
-
     try:
-        worksheet = sh.worksheet(f'Day {NOW.date()}')
-        print(worksheet)
-    except gspread.exceptions.WorksheetNotFound:
-        SignInTable.query.delete()
-        db.session.commit()
-        SignOutTable.query.delete()
-        db.session.commit()
-        worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
-        worksheet.update('A1', 'Sign In')
-        worksheet.update('F1', 'Sign Out')
-        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
-        print(worksheet)
-    set_with_dataframe(worksheet, SOdf, row=2, col=6)
+        if data['function'] == 'returnSpreadsheetKey':
+            return att.returnSpreadsheetKey(data)
+        elif data['function'] == 'writeToSheets':
+            return att.writeToSheets(data)
+        else:
+            return {'value': 'function not found'}
+    except Exception as e:
+        return {'value': 'no function specified'}
 
-    print(worksheet.id)
-
-    return {
-        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
-        'worksheet_key': worksheet.id
-    }
-
-
-@app.route('/writeToSheets/signInTable', methods=['POST'])
-def writeToSheetsSignInTable():
-    global NOW, gc, sh
-    print(NOW, sh, gc)
-
+@app.route('/inventory', methods=['GET', 'POST'])
+def allInventoryEndpoints():
     data = request.get_json()
-    print(data)
-
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    print(account)
-
-    if datetime.datetime.now(pytz.timezone('EST')).day != NOW.day:
-        db.session.query(SignInTable).delete()
-        db.session.query(SignOutTable).delete()
-        db.session.commit()
-
-        NOW = datetime.datetime.now(pytz.timezone('EST'))
-        print(NOW)
-
-    entry = SignInTable(
-        name=account.name,
-        room=data['room'],
-        time=datetime.datetime.now(pytz.timezone('EST')).time()
-    )
-    print(entry)
-
-    db.session.add(entry)
-    db.session.commit()
-
-    SIdf = pd.DataFrame(query_to_dict(SignInTable.query.all()))
-    print(SIdf)
-
-    try:
-        worksheet = sh.worksheet(f'Day {NOW.date()}')
-        print(worksheet)
-    except gspread.exceptions.WorksheetNotFound:
-        SignInTable.query.delete()
-        db.session.commit()
-        SignOutTable.query.delete()
-        db.session.commit()
-        worksheet = sh.add_worksheet(title=f'Day {NOW.date()}', rows=500, cols=10)
-        worksheet.update('A1', 'Sign In')
-        worksheet.update('F1', 'Sign Out')
-        worksheet.format('A1:F1', {'textFormat': {'bold': True}})
-        print(worksheet)
-    set_with_dataframe(worksheet, SIdf, row=2)
-
-    print(worksheet.id)
-
-    return {
-        'spreadsheet_key': '12P--EB0GyQdKmmhb0GEiTHZLPaGGP1EfUwHppgkShr0',
-        'worksheet_key': worksheet.id
-    }
-
-
-@app.route('/fetchInformation/<string:deviceid>')
-def fetchInformation(deviceid):
-    account = User.query.filter_by(deviceid=deviceid).first()
-    print(account)
-    if account is not None:
-        print('success')
-        print()
-        return {
-            'deviceID': account.deviceid,
-            'name': account.name,
-            'subgroup': account.subgroup,
-            'status': account.status,
-            'pfp': account.pfp,
-            'email': account.email,
-            'notifmethod': account.notifmethod
-        }
-    else:
-        print('fail')
-        return {'output': False}
-
-
-@app.route('/updateInfo', methods=['POST'])
-def updateInfo():
-    data = request.get_json()
-    account = User.query.filter_by(deviceid=data['deviceid']).first()
-    account.notifmethod = (data['notifmethod'] if data['notifmethod'] is not None else account.notifmethod)
-    account.subgroup = (data['subgroup'] if data['subgroup'] is not None else account.subgroup)
-    account.status = (data['status'] if data['status'] is not None else account.status)
-    db.session.add(account)
-    db.session.commit()
-    return {'output': True}
-
-
-@app.route('/createNewAccount', methods=['POST'])
-def storeInfo():
-    try:
-        data = request.get_json()
-        print('before setting variables')
-        name = data['name']
-        deviceID = data['deviceID']
-        subgroup = data['subgroup']
-        status = data['status']
-        pfp = data['pfp']
-        email = data['email']
-        notifmethod = data['notifmethod']
-        # if name or deviceID or subgroup or
-        print("after setting variables")
-        print(name, deviceID, email, pfp, subgroup, status)
-        account = User(
-            deviceid=deviceID,
-            name=name,
-            subgroup=subgroup,
-            status=status,
-            pfp=pfp,
-            email=email,
-            notifmethod=notifmethod
-        )
-        db.session.add(account)
-        db.session.commit()
-        return {'value': True}
-
-    except:
-        return {'value': False}
-
-
-@app.route('/viewAccounts')
-def viewAccounts():
-    accounts = User.query.all()
-    return_data = {}
-    for account in accounts:
-        user = {
-            'name': account.name,
-            'subgroup': account.subgroup,
-            'status': account.status,
-            'notifmethod': account.notifmethod,
-            'email': account.email
-        }
-        print(user)
-        return_data[account.name] = user
-
-    return return_data
-
+    return inv.returnTable()
 
 if __name__ == "__main__":
     app.run()
